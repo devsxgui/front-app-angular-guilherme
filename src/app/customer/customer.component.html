@@ -1,35 +1,48 @@
 <mat-toolbar>
-  <span> Clientes </span>
+    <span>Clientes</span>
 </mat-toolbar>
 
 <form>
   <mat-form-field class="full-width">
     <mat-label>Primeiro Nome: </mat-label>
-    <input type="text" matInput placeholder="Digite seu primeiro nome" />
-  </mat-form-field>
-  <mat-form-field class="full-width">
+    <!-- com ngModel podemos ""ligar"" esse campos com a model do nosso .ts -->
+    <!-- com formControl podemos ""ligar"" esse campos com a validação do nosso .ts -->
+    <!-- com name só estamos dando um nome mesmo pra esse input -->
+    <input [(ngModel)]="customer.firstNameCustomer" [formControl]="firstNameCustomer"
+    name="firstNameCustomer" type="text" matInput placeholder="Digite seu primeiro nome" required/>
+</mat-form-field>
+<mat-form-field class="full-width">
     <mat-label>Último Nome: </mat-label>
-    <input type="text" matInput placeholder="Digite seu último nome" />
-  </mat-form-field>
-  <mat-form-field class="full-width">
+    <input [(ngModel)]="customer.lastNameCustomer" [formControl]="lastNameCustomer"
+    name="lastNameCustomer" type="text" matInput placeholder="Digite seu último nome" required/>
+</mat-form-field>
+<mat-form-field class="full-width">
     <mat-label>CPF: </mat-label>
-    <input type="text" matInput placeholder="Digite seu CPF" />
-  </mat-form-field>
-  <mat-form-field class="full-width">
+    <input [(ngModel)]="customer.cpfCustomer" [formControl]="cpfCustomer"
+    name="cpfCustomer" type="text" matInput placeholder="Digite seu CPF" required/>
+</mat-form-field>
+<mat-form-field class="full-width">
     <mat-label>Data de Nascimento: </mat-label>
-    <input type="date" matInput placeholder="Digite sua data de nascimento" />
-  </mat-form-field>
-  <mat-form-field class="full-width">
+    <!-- Lembrete: fazer a devida validação -->
+    <input [(ngModel)]="customer.birthdateCustomer" type="date"
+    name="birthdateCustomer" matInput placeholder="Digite sua data de nascimento" />
+</mat-form-field>
+<mat-form-field class="full-width">
     <mat-label>Renda Mensal: R$ </mat-label>
-    <input type="number" matInput placeholder="Digite sua renda mensal (R$)" />
-  </mat-form-field>
-  <mat-form-field class="full-width">
+    <!-- Lembrete: fazer a devida validação -->
+    <input [(ngModel)]="customer.monthlyIncomeCustomer"
+    name="monthlyIncomeCustomer" type="number" matInput placeholder="Digite sua renda mensal (R$)" />
+</mat-form-field>
+<mat-form-field class="full-width">
     <mat-label>Email: </mat-label>
-    <input type="email" matInput placeholder="Digite seu email" />
-  </mat-form-field>
-  <mat-form-field class="full-width">
+    <input [(ngModel)]="customer.emailCustomer" [formControl]="emailCustomer"
+    name="emailCustomer" type="email" matInput placeholder="Digite seu email" required/>
+</mat-form-field>
+<mat-form-field class="full-width">
     <mat-label>Senha: </mat-label>
-    <input type="password" matInput placeholder="Digite sua senha" />
-  </mat-form-field>
-  <button mat-raised-button color="primary"> Salvar </button>
+    <input [(ngModel)]="customer.passwordCustomer" [formControl]="passwordCustomer"
+    name="passwordCustomer" type="password" matInput placeholder="Digite sua senha" required/>
+</mat-form-field>
+
+<button (click)="createCustomer()" [disabled]="!validateFields()" mat-raised-button color="primary">Salvar</button>
 </form>
