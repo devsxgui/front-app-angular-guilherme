@@ -10,16 +10,23 @@ import { ToastrModule } from 'ngx-toastr';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
-
+import { MatCardModule } from '@angular/material/card';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatTableModule } from '@angular/material/table';
+import { MatIconModule } from '@angular/material/icon';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatDialogModule } from '@angular/material/dialog';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { CustomerService } from './customer.service';
+import { CustomerService } from './services/customer.service';
 import { CustomerComponent } from './customer/customer.component';
+import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    CustomerComponent
+    CustomerComponent,
+    ConfirmationDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -37,11 +44,20 @@ import { CustomerComponent } from './customer/customer.component';
       timeOut: 4000, //tempo de exibição
       closeButton: true, //botão para fechar
       progressBar: true //barra de progresso do tempo de exibição
-    })
+    }),
+    MatCardModule,
+    MatTabsModule,
+    MatTableModule,
+    MatIconModule,
+    MatPaginatorModule,
+    MatDialogModule
   ],
   providers: [
     CustomerService,
-    DatePipe
+    DatePipe,
+  ],
+  exports: [
+    ConfirmationDialogComponent
   ],
   bootstrap: [AppComponent]
 })

@@ -1,26 +1,44 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmationDialogComponent } from '../components/confirmation-dialog/confirmation-dialog.component';
 
 //Import para a bendita data
 import { DatePipe } from '@angular/common';
 
 //Imports para Customer
 import { Customer } from '../model/Customer';
-import { CustomerService } from '../customer.service';
+import { CustomerService } from '../services/customer.service';
+import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-customer',
   templateUrl: './customer.component.html',
-  styleUrls: ['./customer.component.css']
+  styleUrls: ['./customer.component.css'],
 })
 
-export class CustomerComponent {
+export class CustomerComponent implements OnInit{
+
+  success: boolean = false;
+  errors!: String[];
+  displayedColumns: string[] = ['idCustomer', 'firstNameCustomer', 'lastNameCustomer', 'cpfCustomer', 'birthdateCustomer', 'dateCreatedCustomer', 'monthlyIncomeCustomer', 'emailCustomer', 'statusCustomer', 'optionsCustomer'];
+  ELEMENT_DATA: Customer[] = [];
+  dataSource = new MatTableDataSource<Customer>(this.ELEMENT_DATA);
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+
+  ngOnInit(): void {
+    this.listCustomer();
+  }
+
   constructor(
+    private dialog: MatDialog,
     private toast: ToastrService,
-    private service: CustomerService,
-    private router: Router
+    private router: Router,
+    private service: CustomerService
   ) {}
 
   //Aqui não tem jeito, iremos repétir código
@@ -63,32 +81,59 @@ export class CustomerComponent {
     this.passwordCustomer.valid
   }
 
-  createCustomer() {
-    //DatePipe para transformar a data no formato desejado
+  saveCustomer() {
     const datePipe = new DatePipe('en-US');
-    this.customer.birthdateCustomer = datePipe.transform(this.customer.birthdateCustomer, 'dd/MM/yyyy');
+    this.customer.birthdateCustomer = datePipe.transform(
+      this.customer.birthdateCustomer, 'dd/MM/yyyy');
 
-    //Estamos chamando o método da nossa service passando nosso customer
-    this.service.create(this.customer).subscribe({ next: () => {
-      this.toast.success('O Cliente foi cadastrado com sucesso!', 'Cadastro');
-      //this.router.navigate(['customer']); //nos leva até a rota de listagem que ainda não temos
-
+    this.service.create(this.customer).subscribe({next: response => {
+      this.success = true;
+      this.errors = [];
+      this.toast.success('O cliente '+ this.customer.firstNameCustomer +' '+ this.customer.lastNameCustomer +' foi cadastrado com sucesso!', 'Sucesso!!!');
     }, error: ex => {
-
-      //Se tem erros
-      if(ex.error.errors) {
-
-        //Laço condicional de erros
-        ex.error.errors.forEach((element: { message: string | undefined; }) => {
-          this.toast.error(element.message, 'Erro');
-          //Aparece o erro (mas não temos o devido tratamento no backend)
+      if (ex.error.errors) {
+        this.errors = ex.error.errors;
+        this.success = false;
+        ex.error.errors.forEach((element:any) => {
+          this.toast.error(element.message, 'Atenção!!!');
         });
-
       } else {
-        this.toast.error(ex.error.message, 'Erro');
-        //Aparece o erro (mas não temos o devido tratamento no backend)
+          this.success = false;
+          this.errors = ex.error.errors;
+          this.toast.error(ex.error.message, 'Atenção!');
       }
-    }});
+    }})
+
   }
 
+  listCustomer() {
+    this.service.list().subscribe((response: any) => {
+      this.ELEMENT_DATA = response.result as Customer[]; // Verifique o tipo e faça a conversão
+      this.dataSource = new MatTableDataSource<Customer>(this.ELEMENT_DATA);
+      this.dataSource.paginator = this.paginator;
+    });
+  }
+
+  deleteCustomer(idCustomer): void{
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: 'Você realmente quer deletar esse Cliente?',
+    })
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.service.delete(idCustomer).subscribe({ next: () => {
+          this.toast.success('Cliente deletado com sucesso!', this.customer.firstNameCustomer);
+          this.router.navigate(['customer']);
+          this.listCustomer()
+        }, error: ex => {
+          if (ex.error.errors) {
+            ex.error.errors.forEach(element => {
+              this.toast.error(element.message);
+            });
+          } else {
+            this.toast.error(ex.error.message);
+          }
+        }})
+      }
+    })
+  }
 }
