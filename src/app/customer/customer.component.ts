@@ -20,12 +20,24 @@ import { MatPaginator } from '@angular/material/paginator';
   styleUrls: ['./customer.component.css'],
 })
 
-export class CustomerComponent implements OnInit{
-
+export class CustomerComponent implements OnInit {
   success: boolean = false;
   errors!: String[];
-  displayedColumns: string[] = ['idCustomer', 'firstNameCustomer', 'lastNameCustomer', 'cpfCustomer', 'birthdateCustomer', 'dateCreatedCustomer', 'monthlyIncomeCustomer', 'emailCustomer', 'statusCustomer', 'optionsCustomer'];
+  displayedColumns: string[] = [
+    'idCustomer',
+    'firstNameCustomer',
+    'lastNameCustomer',
+    'cpfCustomer',
+    'birthdateCustomer',
+    'dateCreatedCustomer',
+    'monthlyIncomeCustomer',
+    'emailCustomer',
+    'statusCustomer',
+    'deleteCustomer',
+    'findCustomer',
+  ];
   ELEMENT_DATA: Customer[] = [];
+  message: string = '';
   dataSource = new MatTableDataSource<Customer>(this.ELEMENT_DATA);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -35,11 +47,8 @@ export class CustomerComponent implements OnInit{
   }
 
   constructor(
-    private dialog: MatDialog,
-    private toast: ToastrService,
-    private router: Router,
-    private service: CustomerService
-  ) {}
+    private service: CustomerService,
+    private toast: ToastrService) {}
 
   //Aqui não tem jeito, iremos repétir código
   //Estamos limpando todos valores
@@ -51,59 +60,36 @@ export class CustomerComponent implements OnInit{
     birthdateCustomer: '',
     monthlyIncomeCustomer: '',
     emailCustomer: '',
-    passwordCustomer: ''
-  }
+    passwordCustomer: '',
+  };
 
-  //Estamos falando que esse atributo só será valido quando tiver um tamanho de no
-  //mínimo 3 caracteres
-  firstNameCustomer: FormControl = new FormControl(null, Validators.minLength(3));
-  lastNameCustomer: FormControl = new FormControl(null, Validators.minLength(3));
-
-  //Estamos falando que esse atributo é requerido/obrigatório
-  cpfCustomer: FormControl = new FormControl(null, Validators.required);
-
-  //monthlyIncomeCustomer: FormControl = new FormControl(null, Validators.minLength(3));
-  //Estamos falando que esse atributo só é valido quando tiver um formato de e-mail
-  //que já tem a validação nesse Validators
-  emailCustomer: FormControl = new FormControl(null, Validators.email);
-  passwordCustomer: FormControl = new FormControl(null, Validators.minLength(3));
-
-  //OBS: Não consegui fazer a validação de birthdate e monthlyIncome
-  //Função que verifica se os campos estão validos
-
-  validateFields(): boolean {
-    //Iremos ter um botão que só é habilitado se tudo estiver preenchido
-    //ou seja, se isso retornar falso, o botão ficará desabilitado
-    return this.firstNameCustomer.valid &&
-    this.lastNameCustomer.valid &&
-    this.cpfCustomer.valid &&
-    this.emailCustomer.valid &&
-    this.passwordCustomer.valid
+ clearFields() {
+    this.customer.idCustomer = '',
+    this.customer.firstNameCustomer = '',
+    this.customer.lastNameCustomer = '',
+    this.customer.cpfCustomer = '',
+    this.customer.birthdateCustomer = '',
+    this.customer.monthlyIncomeCustomer = '',
+    this.customer.emailCustomer = '',
+    this.customer.passwordCustomer = ''
   }
 
   saveCustomer() {
     const datePipe = new DatePipe('en-US');
-    this.customer.birthdateCustomer = datePipe.transform(
-      this.customer.birthdateCustomer, 'dd/MM/yyyy');
+    this.customer.birthdateCustomer = datePipe.transform(this.customer.birthdateCustomer, 'dd/MM/yyyy');
 
-    this.service.create(this.customer).subscribe({next: response => {
+    this.service.create(this.customer).subscribe((response: any) => {
       this.success = true;
       this.errors = [];
-      this.toast.success('O cliente '+ this.customer.firstNameCustomer +' '+ this.customer.lastNameCustomer +' foi cadastrado com sucesso!', 'Sucesso!!!');
-    }, error: ex => {
-      if (ex.error.errors) {
-        this.errors = ex.error.errors;
-        this.success = false;
-        ex.error.errors.forEach((element:any) => {
-          this.toast.error(element.message, 'Atenção!!!');
-        });
-      } else {
-          this.success = false;
-          this.errors = ex.error.errors;
-          this.toast.error(ex.error.message, 'Atenção!');
-      }
-    }})
-
+      this.customer = response.result as Customer;
+      var date = this.customer.birthdateCustomer;
+      var newDate = date.split("/").reverse().join("-");
+      this.customer.birthdateCustomer = newDate;
+      this.toast.success('O cliente '+ this.customer.firstNameCustomer +' '+ this.customer.lastNameCustomer +
+      ' foi salvo com sucesso!');
+      this.listCustomer();
+      this.clearFields();
+    });
   }
 
   listCustomer() {
@@ -114,26 +100,23 @@ export class CustomerComponent implements OnInit{
     });
   }
 
-  deleteCustomer(idCustomer): void{
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: 'Você realmente quer deletar esse Cliente?',
-    })
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.service.delete(idCustomer).subscribe({ next: () => {
-          this.toast.success('Cliente deletado com sucesso!', this.customer.firstNameCustomer);
-          this.router.navigate(['customer']);
-          this.listCustomer()
-        }, error: ex => {
-          if (ex.error.errors) {
-            ex.error.errors.forEach(element => {
-              this.toast.error(element.message);
-            });
-          } else {
-            this.toast.error(ex.error.message);
-          }
-        }})
-      }
-    })
+  deleteCustomer(customer: Customer) {
+    if (window.confirm('Deseja realmente excluir este contato?')) {
+      this.service.delete(customer.idCustomer).subscribe((response: any) => {
+        this.message = response.result.result as string;
+        window.alert(this.message);
+        this.listCustomer();
+      });
+    }
+  }
+
+  findCustomer(customer: Customer) {
+    this.service.findById(customer.idCustomer).subscribe((response: any) => {
+      this.customer = response.result as Customer;
+      const datePipe = new DatePipe('en-US');
+      var date = this.customer.birthdateCustomer;
+      var newDate = date.split("/").reverse().join("-");
+      this.customer.birthdateCustomer = newDate;
+    });
   }
 }
