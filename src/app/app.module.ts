@@ -19,14 +19,18 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CustomerService } from './services/customer.service';
-import { CustomerComponent } from './customer/customer.component';
+import { CustomerComponent } from './components/customer/customer.component';
 import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
+import { ProductComponent } from './components/product/product.component';
+import { CategoryComponent } from './components/category/category.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     CustomerComponent,
-    ConfirmationDialogComponent
+    ConfirmationDialogComponent,
+    ProductComponent,
+    CategoryComponent
   ],
   imports: [
     BrowserModule,

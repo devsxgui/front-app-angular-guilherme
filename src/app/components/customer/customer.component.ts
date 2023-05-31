@@ -4,14 +4,14 @@ import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
-import { ConfirmationDialogComponent } from '../components/confirmation-dialog/confirmation-dialog.component';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 
 //Import para a bendita data
 import { DatePipe } from '@angular/common';
 
 //Imports para Customer
-import { Customer } from '../model/Customer';
-import { CustomerService } from '../services/customer.service';
+import { Customer } from '../../model/Customer';
+import { CustomerService } from '../../services/customer.service';
 import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
