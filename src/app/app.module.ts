@@ -11,6 +11,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
@@ -23,6 +24,7 @@ import { CustomerComponent } from './components/customer/customer.component';
 import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
 import { ProductComponent } from './components/product/product.component';
 import { CategoryComponent } from './components/category/category.component';
+import { MenuComponent } from './components/menu/menu.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +32,8 @@ import { CategoryComponent } from './components/category/category.component';
     CustomerComponent,
     ConfirmationDialogComponent,
     ProductComponent,
-    CategoryComponent
+    CategoryComponent,
+    MenuComponent
   ],
   imports: [
     BrowserModule,
@@ -50,6 +53,7 @@ import { CategoryComponent } from './components/category/category.component';
       progressBar: true //barra de progresso do tempo de exibição
     }),
     MatCardModule,
+    MatMenuModule,
     MatTabsModule,
     MatTableModule,
     MatIconModule,
