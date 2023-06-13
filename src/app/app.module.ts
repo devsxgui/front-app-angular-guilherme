@@ -19,21 +19,22 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatDialogModule } from '@angular/material/dialog';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { CustomerService } from './services/customer.service';
+import { CustomerService } from './service/customer.service';
 import { CustomerComponent } from './components/customer/customer.component';
-import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
 import { ProductComponent } from './components/product/product.component';
 import { CategoryComponent } from './components/category/category.component';
 import { MenuComponent } from './components/menu/menu.component';
+import { HomeComponent } from './components/home/home.component';
+import { ProductService } from './service/product.service';
 
 @NgModule({
   declarations: [
     AppComponent,
     CustomerComponent,
-    ConfirmationDialogComponent,
     ProductComponent,
     CategoryComponent,
-    MenuComponent
+    MenuComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,
@@ -62,10 +63,9 @@ import { MenuComponent } from './components/menu/menu.component';
   ],
   providers: [
     CustomerService,
+    CategoryComponent,
+    ProductService,
     DatePipe,
-  ],
-  exports: [
-    ConfirmationDialogComponent
   ],
   bootstrap: [AppComponent]
 })
